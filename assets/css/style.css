@@ -1,3 +1,6 @@
+/* Import Poppins font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
@@ -20,6 +23,7 @@ body {
     transition: var(--transition);
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
 }
 
 [data-bs-theme="dark"] body {
