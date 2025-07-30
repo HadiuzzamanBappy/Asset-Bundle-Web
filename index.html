@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assets Bundler</title>
+    <meta name="description"
+        content="Free online tool to combine and minify JavaScript and CSS files. Bundle your assets efficiently with our fast, secure bundler.">
+    <meta name="keywords"
+        content="javascript bundler, css minifier, asset bundler, file combiner, minify js, compress css">
+    <meta name="author" content="Hadiuzzaman Bappy">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="JS/CSS Bundler - Online Asset Bundler">
+    <meta property="og:description"
+        content="Combine and minify your JavaScript and CSS files with our free online bundler.">
+    <meta property="og:image" content="/assets/images/og-image.png">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta property="og:type" content="website">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/logo-180x180.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/logo-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/logo-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- External Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/terser@5.43.1/dist/bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/csso@5.0.5/dist/csso.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="py-4">
+    <!-- Theme Toggle Button -->
+    <button class="btn btn-outline-secondary theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <i class="bi bi-sun-fill" id="theme-icon"></i>
+    </button>
+
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold mb-2">
+                    <i class="bi bi-box-seam"></i> JS & CSS Bundler
+                </h1>
+                <p class="lead text-muted">Combine and minify your JavaScript and CSS files with ease</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Upload Section -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-cloud-upload"></i> File Upload
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- File Input -->
+                        <div class="mb-3">
+                            <label for="fileInput" class="form-label fw-semibold">Select JS/CSS Files</label>
+                            <input type="file" id="fileInput" multiple accept=".js,.css" class="form-control">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Upload JavaScript or CSS files to bundle (Max 5MB
+                                each)
+                            </div>
+                        </div>
+
+                        <!-- Loading Indicator -->
+                        <div id="loading" class="d-none text-center mb-3">
+                            <div class="spinner-border text-primary loading-spinner" role="status">
+                                <span class="visually-hidden">Processing...</span>
+                            </div>
+                            <div class="mt-2 fw-semibold">Processing files...</div>
+                        </div>
+
+                        <!-- File Lists -->
+                        <div class="row">
+                            <div class="col-6">
+                                <h6 class="text-primary fw-semibold">
+                                    <i class="bi bi-filetype-js"></i> JavaScript Files
+                                </h6>
+                                <div id="jsFileList" class="file-list border rounded p-2 overflow-auto"
+                                    style="min-height: 100px;">
+                                    <small class="text-muted">No JS files uploaded</small>
+                                </div>
+                                <div class="mt-2 text-center">
+                                    <small class="badge bg-secondary" id="jsCount">0 files</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h6 class="text-success fw-semibold">
+                                    <i class="bi bi-filetype-css"></i> CSS Files
+                                </h6>
+                                <div id="cssFileList" class="file-list border rounded p-2 overflow-auto"
+                                    style="min-height: 100px;">
+                                    <small class="text-muted">No CSS files uploaded</small>
+                                </div>
+                                <div class="mt-2 text-center">
+                                    <small class="badge bg-secondary" id="cssCount">0 files</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons Section -->
+            <div class="col-lg-8 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-download"></i> Download Options
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="actionButtons" class="d-none">
+                            <!-- JavaScript Section -->
+                            <div class="mb-4" id="jsSection">
+                                <h6 class="text-primary mb-3 fw-semibold">
+                                    <i class="bi bi-filetype-js"></i> JavaScript Bundles
+                                </h6>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <div class="btn-group w-100" role="group">
+                                            <button class="btn btn-outline-primary flex-grow-1"
+                                                onclick="downloadFile('js', false)">
+                                                <i class="bi bi-download"></i> bundle.js
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="viewContent('js', false)"
+                                                data-bs-toggle="modal" data-bs-target="#contentModal">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="btn-group w-100" role="group">
+                                            <button class="btn btn-outline-success flex-grow-1"
+                                                onclick="downloadFile('js', true)">
+                                                <i class="bi bi-download"></i> bundle.min.js
+                                            </button>
+                                            <button class="btn btn-outline-success" onclick="viewContent('js', true)"
+                                                data-bs-toggle="modal" data-bs-target="#contentModal">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CSS Section -->
+                            <div class="mb-4" id="cssSection">
+                                <h6 class="text-success mb-3 fw-semibold">
+                                    <i class="bi bi-filetype-css"></i> CSS Bundles
+                                </h6>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <div class="btn-group w-100" role="group">
+                                            <button class="btn btn-outline-primary flex-grow-1"
+                                                onclick="downloadFile('css', false)">
+                                                <i class="bi bi-download"></i> bundle.css
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="viewContent('css', false)"
+                                                data-bs-toggle="modal" data-bs-target="#contentModal">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="btn-group w-100" role="group">
+                                            <button class="btn btn-outline-success flex-grow-1"
+                                                onclick="downloadFile('css', true)">
+                                                <i class="bi bi-download"></i> bundle.min.css
+                                            </button>
+                                            <button class="btn btn-outline-success" onclick="viewContent('css', true)"
+                                                data-bs-toggle="modal" data-bs-target="#contentModal">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                <button class="btn btn-warning" onclick="downloadAllAsZip()">
+                                    <i class="bi bi-archive"></i> Download All as ZIP
+                                </button>
+                                <button class="btn btn-danger" onclick="resetFiles()">
+                                    <i class="bi bi-arrow-clockwise"></i> Reset All Files
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="noFilesMessage" class="text-center text-muted">
+                            <i class="bi bi-cloud-upload display-1 mb-3 opacity-50"></i>
+                            <h5>No files uploaded yet</h5>
+                            <p>Upload JavaScript or CSS files to see download options</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row" id="statsRow" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-graph-up"></i> Bundle Statistics
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center g-3">
+                            <div class="col-md-3">
+                                <div class="stats-card border rounded p-3">
+                                    <h5 class="text-primary mb-1" id="jsOriginalSize">0 KB</h5>
+                                    <small class="text-muted fw-semibold">JS Original</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card border rounded p-3">
+                                    <h5 class="text-success mb-1" id="jsMinifiedSize">0 KB</h5>
+                                    <small class="text-muted fw-semibold">JS Minified</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card border rounded p-3">
+                                    <h5 class="text-primary mb-1" id="cssOriginalSize">0 KB</h5>
+                                    <small class="text-muted fw-semibold">CSS Original</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card border rounded p-3">
+                                    <h5 class="text-success mb-1" id="cssMinifiedSize">0 KB</h5>
+                                    <small class="text-muted fw-semibold">CSS Minified</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3 text-center g-3">
+                            <div class="col-md-6">
+                                <div class="stats-card border rounded p-2">
+                                    <small class="text-muted fw-semibold">JS Compression: </small>
+                                    <span class="badge bg-info" id="jsCompression">0%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stats-card border rounded p-2">
+                                    <small class="text-muted fw-semibold">CSS Compression: </small>
+                                    <span class="badge bg-info" id="cssCompression">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content View Modal -->
+    <div class="modal fade" id="contentModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">File Content</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div>
+                            <span class="badge bg-secondary" id="modalFileSize">0 KB</span>
+                            <span class="badge bg-info" id="modalLineCount">0 lines</span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard()">
+                            <i class="bi bi-clipboard"></i> Copy
+                        </button>
+                    </div>
+                    <textarea id="modalContent" class="form-control" rows="20" readonly></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="modalDownloadBtn">
+                        <i class="bi bi-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/js/script.js"></script>
+</body>
+
+</html>
