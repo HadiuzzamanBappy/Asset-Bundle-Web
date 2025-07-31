@@ -1,8 +1,14 @@
 # Asset Bundler
 
-![Logo](https://./logo/logo.png)
-
 A lightweight, client-side tool for combining and minifying JavaScript and CSS files directly in the browser.
+
+## 🌐 Live Demo & Screenshot
+
+**[➡️ View Live Demo Here](https://assets-bundle.vercel.app/)**
+
+<br>
+
+![Project Screenshot](/assets/image/image.png)
 
 ---
 
