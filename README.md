@@ -1,6 +1,6 @@
 # Asset Bundler
 
-![Logo](https://./logo/logo.png)
+![Logo](/assets/logo/logo.png)
 
 A lightweight, client-side tool for combining and minifying JavaScript and CSS files directly in the browser.
 
